@@ -9,18 +9,26 @@ namespace Horst {
 
 class ConfigParser {
   protected:
+    std::string _filename;
     BSON::Value _config;
   public:
-    ConfigParser(const std::string & filename){
-        std::ifstream t(filename);
+    ConfigParser(const std::string & filename) : _filename{filename} {
+    };
+
+    void loadFile(std::shared_ptr<ProcessorManager> mgr){
+        std::ifstream t(_filename);
         std::string str((std::istreambuf_iterator<char>(t)),
                                 std::istreambuf_iterator<char>());
         _config = BSON::Value::fromJSON(str);
-    };
+        if(_config.isUndefined()){
+            throw std::runtime_error{"no valid config file"};
+        }
+        mgr->setConfig("global",_config);
+    }
 
     void populateProcessorManager(std::shared_ptr<ProcessorManager> mgr){
-        BSON::Object cfg = _config;
-        for(auto & kv : cfg){
+        BSON::Object instances_cfg = _config["instances"];
+        for(auto & kv : instances_cfg){
             mgr->setConfig(kv.first,kv.second);
             if(kv.second.isObject()){
                 if (kv.second["class"].isString()){

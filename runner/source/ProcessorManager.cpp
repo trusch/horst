@@ -7,7 +7,8 @@ void Horst::Processor::emit(BSON::Value && value, int output) {
 void Horst::ProcessorManager::startProcessor(const std::string & className, const std::string & name) {
     std::lock_guard<std::mutex> lock{_mutex};
     if(_constructors.count(className) == 0){
-        throw std::runtime_error{"no such class"};
+        std::string msg = "no such class: "+className+" (instance-name: "+name+")";
+        throw std::runtime_error{msg};
     }
     _processors[name] = _constructors[className](shared_from_this(),name);
 }
