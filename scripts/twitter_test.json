@@ -1,0 +1,25 @@
+{
+    "plugins": "./build/bin/plugins",
+    "instances" : {
+        "twitter" : {
+            "class" : "twittersource",
+            "output:0" : "projector:0",
+            "track": "#freeAJStaff",
+            "consumerKey" : "<YOUR-CONSUMER-KEY>",
+            "consumerSecret" : "<YOUR-CONSUMER-SECRET>",
+            "accessTokenKey" : "<YOUR-ACCESS-TOKEN-KEY>",
+            "accessTokenSecret" : "<YOUR-ACCESS-TOKEN-SECRET>"
+        },
+        "projector" : {
+            "class" : "projector",
+            "output:0" : "logger:0",
+            "format" : {
+                "name" : "@user.name",
+                "msg" : "@text"
+            }
+        },
+        "logger" : {
+            "class" : "logger"
+        }
+    }
+}
