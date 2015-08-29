@@ -4,19 +4,37 @@
         "twitter" : {
             "class" : "twittersource",
             "output:0" : "projector:0",
-            "track": "#freeAJStaff",
-            "consumerKey" : "<YOUR-CONSUMER-KEY>",
-            "consumerSecret" : "<YOUR-CONSUMER-SECRET>",
-            "accessTokenKey" : "<YOUR-ACCESS-TOKEN-KEY>",
-            "accessTokenSecret" : "<YOUR-ACCESS-TOKEN-SECRET>"
+            "track": "obama,trump",
+            "consumerKey" : "<INSERT-YOURS>",
+            "consumerSecret" : "<INSERT-YOURS>",
+            "accessTokenKey" : "<INSERT-YOURS>",
+            "accessTokenSecret" : "<INSERT-YOURS>"
         },
         "projector" : {
             "class" : "projector",
-            "output:0" : "logger:0",
-            "format" : {
-                "name" : "@user.name",
-                "msg" : "@text"
-            }
+            "output:0" : "normalizer:0",
+            "format": "@text"
+        },
+        "normalizer" : {
+            "class" : "stringnormalizer",
+            "output:0" : "to_words:0",
+            "cutset": ",.!?\"':_-\n\/@#",
+            "tolower": true
+        },
+        "to_words" : {
+            "class": "texttowords",
+            "output:0" : "filter:0"
+        },
+        "filter": {
+            "class": "regexfilter",
+            "output:0" : "histogram:0",
+            "regex": "obama|trump"
+        },
+        "histogram": {
+            "class": "incrementalwordhistogram",
+            "output:0": "logger:0",
+            "decayFactor": 0.9,
+            "lowerThreshold": 0.1
         },
         "logger" : {
             "class" : "logger"
