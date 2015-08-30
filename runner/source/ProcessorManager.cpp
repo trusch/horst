@@ -47,7 +47,7 @@ void Horst::ProcessorManager::emit(BSON::Value && val, const std::string & from,
         std::shared_ptr<Processor> processor;
         int input;
         void operator()(){
-            processor->process(std::move(value),input);
+            processor->threadSafeProcess(std::move(value),input);
         };
     };
     Work work{std::move(val),processor,adj.input};
