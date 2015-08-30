@@ -5,7 +5,7 @@
 
 namespace Horst {
 
-class ProjectorProcessor : public Processor {
+class Projector : public Processor {
   protected:
     BSON::Value _format;
 
@@ -47,10 +47,10 @@ class ProjectorProcessor : public Processor {
     }
 
   public:
-    ProjectorProcessor(std::shared_ptr<ProcessorManager> mgr, const std::string & id, BSON::Value format) : 
+    Projector(std::shared_ptr<ProcessorManager> mgr, const std::string & id, BSON::Value format) : 
       Processor{mgr, id},
       _format{format} {}
-    virtual ~ProjectorProcessor() {}
+    virtual ~Projector() {}
 
     virtual void process(BSON::Value && value, int input) {
         BSON::Value result{_format};

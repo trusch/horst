@@ -2,7 +2,7 @@
 #include "horst/plugins/TwitterSource.h"
 
 extern "C" void init(std::shared_ptr<Horst::ProcessorManager> mgr){
-    mgr->declare("twittersource", [](std::shared_ptr<Horst::ProcessorManager> mgr, 
+    mgr->declare("TwitterSource", [](std::shared_ptr<Horst::ProcessorManager> mgr, 
                                       const std::string & id){
         const auto & cfg = mgr->getConfig(id);
         auto track = cfg["track"].getString();

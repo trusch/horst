@@ -25,12 +25,12 @@ std::ostream &operator<<(std::ostream &stream,
 
 namespace Horst {
 
-class LoggerProcessor : public Processor {
+class Logger : public Processor {
   protected:
 
   public:
-    LoggerProcessor(std::shared_ptr<ProcessorManager> mgr, const std::string & id) : Processor{mgr, id} {}
-    virtual ~LoggerProcessor() {}
+    Logger(std::shared_ptr<ProcessorManager> mgr, const std::string & id) : Processor{mgr, id} {}
+    virtual ~Logger() {}
 
     virtual void process(BSON::Value && value, int input) {
         auto now = std::chrono::system_clock::now();

@@ -7,13 +7,13 @@
 
 namespace Horst {
 
-class NaturalNumbersProcessor : public Processor {
+class NaturalNumbers : public Processor {
   protected:
     std::thread _runloop;
     std::atomic<bool> _stop{false};
   
   public:  
-    NaturalNumbersProcessor(std::shared_ptr<ProcessorManager> mgr, const std::string & id, int start, int interval) : Processor{mgr,id} {
+    NaturalNumbers(std::shared_ptr<ProcessorManager> mgr, const std::string & id, int start, int interval) : Processor{mgr,id} {
         _runloop = std::move(std::thread{[this,start,interval](){
             int current = start;
             while(!_stop.load()){
@@ -23,7 +23,7 @@ class NaturalNumbersProcessor : public Processor {
         }});
     }
     
-    virtual ~NaturalNumbersProcessor(){
+    virtual ~NaturalNumbers(){
         _stop.store(true);
         if(_runloop.joinable())_runloop.join();
     }

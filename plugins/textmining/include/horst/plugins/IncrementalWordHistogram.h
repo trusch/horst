@@ -27,6 +27,7 @@ class IncrementalWordHistogram : public Processor {
         }
       }
       for(auto & key : toDelete){
+        _sum -= _histogram[key];
         _histogram.erase(key);
       }
     }

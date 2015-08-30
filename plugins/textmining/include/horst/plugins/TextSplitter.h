@@ -6,14 +6,14 @@
 
 namespace Horst {
 
-class TextToWordsProcessor : public Processor {
+class TextSplitter : public Processor {
   protected:
     std::string _cutset;
     bool _toLowercase;
   public:
-    TextToWordsProcessor(std::shared_ptr<ProcessorManager> mgr, const std::string & id) : 
+    TextSplitter(std::shared_ptr<ProcessorManager> mgr, const std::string & id) : 
       Processor{mgr, id}{}
-    virtual ~TextToWordsProcessor() {}
+    virtual ~TextSplitter() {}
 
     virtual void process(BSON::Value && value, int input) {
         if(value.isString()){

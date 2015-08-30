@@ -1,21 +1,21 @@
-#ifndef __STRINGNORMALIZER__
-#define __STRINGNORMALIZER__
+#ifndef __TextNormalizer__
+#define __TextNormalizer__
 
 #include "horst/Processor.h"
 #include <algorithm>
 
 namespace Horst {
 
-class StringNormalizer : public Processor {
+class TextNormalizer : public Processor {
   protected:
     std::string _cutset;
     bool _toLowercase;
   public:
-    StringNormalizer(std::shared_ptr<ProcessorManager> mgr, const std::string & id, std::string cutset, bool toLowercase) : 
+    TextNormalizer(std::shared_ptr<ProcessorManager> mgr, const std::string & id, std::string cutset, bool toLowercase) : 
       Processor{mgr, id},
       _cutset{cutset},
       _toLowercase{toLowercase} {}
-    virtual ~StringNormalizer() {}
+    virtual ~TextNormalizer() {}
 
     virtual void process(BSON::Value && value, int input) {
         if(value.isString()){
@@ -36,4 +36,4 @@ class StringNormalizer : public Processor {
 
 }
 
-#endif // __STRINGNORMALIZER__
+#endif // __TextNormalizer__
