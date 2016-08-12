@@ -4,19 +4,19 @@ import (
 	"time"
 
 	"github.com/trusch/horst"
+	"github.com/trusch/horst/processors/base"
 	"github.com/trusch/horst/registry"
 )
 
 type naturalsType struct {
-	id  string
-	mgr horst.ProcessorManager
+	base.Base
 	run bool
 }
 
 func (naturals *naturalsType) backend() {
 	num := 0
 	for naturals.run {
-		naturals.mgr.Emit(naturals.id, "out", num)
+		naturals.Manager.Emit(naturals.ID, "out", num)
 		time.Sleep(1 * time.Second)
 		num++
 	}
@@ -30,7 +30,8 @@ func (naturals *naturalsType) Stop() {
 
 func init() {
 	registry.Register("naturals", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
-		naturals := &naturalsType{id, mgr, true}
+		naturals := &naturalsType{run: true}
+		naturals.InitBase(id, config, mgr)
 		go naturals.backend()
 		return naturals, nil
 	})

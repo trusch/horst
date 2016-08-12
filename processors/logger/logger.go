@@ -1,14 +1,16 @@
 package logger
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/trusch/horst"
+	"github.com/trusch/horst/processors/base"
 	"github.com/trusch/horst/registry"
 )
 
 type loggerType struct {
-	id   string
+	base.Base
 	data chan loggerMessage
 }
 
@@ -19,7 +21,13 @@ type loggerMessage struct {
 
 func (logger *loggerType) backend() {
 	for msg := range logger.data {
-		fmt.Printf("%v:%v> %v\n", logger.id, msg.input, msg.data)
+		switch msg.data.(type) {
+		case map[string]interface{}:
+			data, _ := json.MarshalIndent(msg.data, "", "  ")
+			fmt.Printf("%v:%v> %v\n", logger.ID, msg.input, string(data))
+		default:
+			fmt.Printf("%v:%v> %v\n", logger.ID, msg.input, msg.data)
+		}
 	}
 }
 
@@ -33,7 +41,8 @@ func (logger *loggerType) Stop() {
 
 func init() {
 	registry.Register("logger", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
-		logger := &loggerType{id, make(chan loggerMessage, 32)}
+		logger := &loggerType{data: make(chan loggerMessage, 32)}
+		logger.InitBase(id, config, mgr)
 		go logger.backend()
 		return logger, nil
 	})
