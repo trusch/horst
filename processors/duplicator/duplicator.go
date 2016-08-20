@@ -37,7 +37,7 @@ func (duplicator *duplicatorType) Stop() {
 }
 
 func init() {
-	registry.Register("duplicator", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
+	registry.Register("github.com/trusch/horst/processors/duplicator", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
 		duplicator := &duplicatorType{data: make(chan duplicatorMessage, 32)}
 		duplicator.InitBase(id, config, mgr)
 		numOfOutputs, ok := config.(float64)

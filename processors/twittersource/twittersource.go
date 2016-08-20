@@ -108,7 +108,7 @@ func (twittersource *twittersourceType) getKeysFromConfig() error {
 }
 
 func init() {
-	registry.Register("twittersource", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
+	registry.Register("github.com/trusch/horst/processors/twittersource", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
 		twittersource := &twittersourceType{}
 		twittersource.InitBase(id, config, mgr)
 		err := twittersource.getKeysFromConfig()

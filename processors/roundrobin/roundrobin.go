@@ -37,7 +37,7 @@ func (roundrobin *roundrobinType) Stop() {
 }
 
 func init() {
-	registry.Register("roundrobin", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
+	registry.Register("github.com/trusch/horst/processors/roundrobin", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
 		roundrobin := &roundrobinType{data: make(chan roundrobinMessage, 32)}
 		roundrobin.InitBase(id, config, mgr)
 		numOfOutputs, ok := config.(float64)

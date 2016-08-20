@@ -40,7 +40,7 @@ func (logger *loggerType) Stop() {
 }
 
 func init() {
-	registry.Register("logger", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
+	registry.Register("github.com/trusch/horst/processors/logger", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
 		logger := &loggerType{data: make(chan loggerMessage, 32)}
 		logger.InitBase(id, config, mgr)
 		go logger.backend()

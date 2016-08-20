@@ -65,7 +65,7 @@ func (projector *projectorType) searchAndReplaceKeys(arg interface{}, inputDoc m
 }
 
 func init() {
-	registry.Register("projector", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
+	registry.Register("github.com/trusch/horst/processors/projector", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
 		projector := &projectorType{data: make(chan projectorMessage, 32)}
 		projector.InitBase(id, config, mgr)
 		go projector.backend()

@@ -62,3 +62,9 @@ func (cfg Config) GetLinkMap() (links.LinkMap, error) {
 	}
 	return res, nil
 }
+
+// New loads a new config from file
+func New(file string) (Config, error) {
+	cfg := Config{}
+	return cfg, cfg.Load(file)
+}

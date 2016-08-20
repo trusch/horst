@@ -29,7 +29,7 @@ func (naturals *naturalsType) Stop() {
 }
 
 func init() {
-	registry.Register("naturals", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
+	registry.Register("github.com/trusch/horst/processors/naturals", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
 		naturals := &naturalsType{run: true}
 		naturals.InitBase(id, config, mgr)
 		go naturals.backend()

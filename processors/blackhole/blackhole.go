@@ -14,7 +14,7 @@ func (naturals *blackholeType) Process(in string, data interface{}) {}
 func (naturals *blackholeType) Stop()                               {}
 
 func init() {
-	registry.Register("blackhole", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
+	registry.Register("github.com/trusch/horst/processors/blackhole", func(id string, config interface{}, mgr horst.ProcessorManager) (horst.Processor, error) {
 		hole := &blackholeType{}
 		hole.InitBase(id, config, mgr)
 		return hole, nil
