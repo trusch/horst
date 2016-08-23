@@ -18,7 +18,7 @@ type NodeConfig struct {
 }
 
 // Config is the config of all processors in a pipeline
-type Config map[string]NodeConfig
+type Config map[string]*NodeConfig
 
 // Load loads a config from file
 func (cfg Config) Load(filename string) error {

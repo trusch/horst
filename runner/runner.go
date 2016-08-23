@@ -1,8 +1,6 @@
 package runner
 
 import (
-	"log"
-
 	"github.com/trusch/horst"
 	"github.com/trusch/horst/config"
 	"github.com/trusch/horst/links"
@@ -33,17 +31,18 @@ func New(config config.Config) (*Runner, error) {
 // Run instanciates all processors
 func (cli *Runner) Run() {
 	for proc, cfg := range cli.config {
-		cli.LoadProcessor(cfg.Class, proc, cfg.Config)
+		cli.LoadProcessor(cfg.Class, proc)
 	}
 }
 
 // LoadProcessor loads a procssor at runtime
-func (cli *Runner) LoadProcessor(className, id string, config interface{}) {
-	proc, err := registry.Construct(className, id, config, cli.manager)
+func (cli *Runner) LoadProcessor(className, id string) error {
+	proc, err := registry.Construct(className, id, cli.config[id].Config, cli.manager)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	cli.manager.AddProcessor(id, proc)
+	return nil
 }
 
 // UnloadProcessor unloads a procssor at runtime
@@ -54,4 +53,11 @@ func (cli *Runner) UnloadProcessor(id string) {
 // UpdateLink overwrites a link
 func (cli *Runner) UpdateLink(from, fromOut, to, toIn string) {
 	cli.links.Add(from, fromOut, to, toIn)
+}
+
+// UpdateConfig overwrites the config part of a single processor
+func (cli *Runner) UpdateConfig(id string, config interface{}) error {
+	cli.config[id].Config = config
+	cli.UnloadProcessor(id)
+	return cli.LoadProcessor(cli.config[id].Class, id)
 }
