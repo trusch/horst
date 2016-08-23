@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
@@ -25,7 +24,6 @@ type twittersourceType struct {
 }
 
 func (twittersource *twittersourceType) backend() {
-	num := 0
 	config := oauth1.NewConfig(twittersource.consumerKey, twittersource.consumerSecret)
 	token := oauth1.NewToken(twittersource.accessToken, twittersource.accessSecret)
 	// OAuth1 http.Client will automatically authorize Requests
@@ -52,8 +50,6 @@ func (twittersource *twittersourceType) backend() {
 			var dataMap map[string]interface{}
 			json.Unmarshal(data, &dataMap)
 			twittersource.Manager.Emit(twittersource.ID, "out", dataMap)
-			time.Sleep(1 * time.Second)
-			num++
 		}
 	}
 }

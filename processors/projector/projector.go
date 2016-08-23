@@ -24,9 +24,14 @@ type projectorMessage struct {
 func (projector *projectorType) backend() {
 	for msg := range projector.data {
 		if obj, ok := msg.data.(map[string]interface{}); ok {
-			res := projector.copyProjectionConfig()
-			res = projector.searchAndReplaceKeys(res, obj).(map[string]interface{})
-			projector.Manager.Emit(projector.ID, "out", res)
+			if cfgString, ok := projector.Config.(string); ok {
+				res := projector.searchAndReplaceKeys(cfgString, obj)
+				projector.Manager.Emit(projector.ID, "out", res)
+			} else {
+				res := projector.copyProjectionConfig()
+				res = projector.searchAndReplaceKeys(res, obj).(map[string]interface{})
+				projector.Manager.Emit(projector.ID, "out", res)
+			}
 		}
 	}
 }
