@@ -1,0 +1,69 @@
+{
+  "twitter": {
+    "class": "github.com/trusch/horst/processors/twittersource",
+    "config": {
+      "consumerKey": "4D6U7dJo1LemnP2qgoAYyHQjy",
+      "consumerSecret": "qC9lzcKHvGQ9PAsmQNdTSWcLwXINllONWoTi2H5YpTB59qZdzj",
+      "accessToken": "768081588655681536-rrJ2mRnycXtN9PvTFdJq3tC6g8UnmKb",
+      "accessSecret": "TtvYLUadroMiiQsZhXiPhi7fVB6QRRIglv6LKn3qoeoKD",
+      "track": ["a","the","i","you"]
+    },
+    "outputs": {
+      "out": "projector"
+    }
+  },
+
+  "projector": {
+    "class": "github.com/trusch/horst/processors/projector",
+    "config": "@text",
+    "outputs": {
+      "out": "sanitizer"
+    }
+  },
+
+  "sanitizer": {
+    "class": "github.com/trusch/horst/processors/textsanitizer",
+    "config": {
+      "toLower": true,
+      "cutset": "@-!?,()[]{}"
+    },
+    "outputs": {
+      "out": "splitter"
+    }
+  },
+
+  "splitter": {
+    "class": "github.com/trusch/horst/processors/textsplitter",
+    "outputs": {
+      "out": "filter"
+    }
+  },
+
+  "filter": {
+    "class": "github.com/trusch/horst/processors/textfilter",
+    "config": {
+      "regex": "^#"
+    },
+    "outputs": {
+      "out": "histogram"
+    }
+  },
+
+  "histogram": {
+    "class": "github.com/trusch/horst/processors/incrementalhistogram",
+    "config": {
+      "decay": 0.999,
+      "min": 0.3,
+      "minEmit": 3,
+      "relative": true,
+      "emitEvery": 50
+    },
+    "outputs": {
+      "out": "logger:histogram"
+    }
+  },
+
+  "logger": {
+    "class": "github.com/trusch/horst/processors/logger"
+  }
+}
