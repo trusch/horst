@@ -91,6 +91,24 @@ func (server *Server) processUpdateLink(msg Message, encoder *json.Encoder) {
 	encoder.Encode(msg)
 }
 
+func (server *Server) processDoc(msg Message, encoder *json.Encoder) {
+	if payload, ok := msg.Payload.(map[string]interface{}); ok {
+		if to, ok := payload["to"].(string); ok {
+			if toIn, ok := payload["toIn"].(string); ok {
+				if value, ok := payload["value"]; ok {
+					server.runner.Process(to, toIn, value)
+					msg.Command = successString
+					encoder.Encode(msg)
+					return
+				}
+			}
+		}
+	}
+	msg.Command = errorString
+	msg.Payload = "need object with to, toIn and value as payload"
+	encoder.Encode(msg)
+}
+
 func (server *Server) processUpdateConfig(msg Message, encoder *json.Encoder) {
 	if payload, ok := msg.Payload.(map[string]interface{}); ok {
 		if id, ok := payload["id"].(string); ok {
@@ -135,10 +153,14 @@ func (server *Server) handleConnection(conn net.Conn) {
 				{
 					server.processUpdateConfig(msg, encoder)
 				}
+			case "process":
+				{
+					server.processDoc(msg, encoder)
+				}
 			default:
 				{
 					msg.Command = errorString
-					msg.Payload = "unknown cmd, need one of load, unload, updateLink, updateConfig"
+					msg.Payload = "unknown cmd, need one of load, unload, updateLink, updateConfig, process"
 					encoder.Encode(msg)
 				}
 			}

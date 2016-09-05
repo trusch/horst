@@ -55,6 +55,11 @@ func (cli *Runner) UpdateLink(from, fromOut, to, toIn string) {
 	cli.links.Add(from, fromOut, to, toIn)
 }
 
+// Process inserts a doc into the pipeline
+func (cli *Runner) Process(to, toIn string, doc interface{}) {
+	cli.manager.Process(to, toIn, doc)
+}
+
 // UpdateConfig overwrites the config part of a single processor
 func (cli *Runner) UpdateConfig(id string, config interface{}) error {
 	cli.config[id].Config = config
