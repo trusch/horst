@@ -1,4 +1,11 @@
 bin/
-builder/generatedRunner
-builder/generatedRunner.go
-.accounts
+docker/horst-dev-runner
+docker/logger
+docker/projector
+docker/textfilter
+docker/texthistogram
+docker/textsanitizer
+docker/textsplitter
+docker/twittersource
+vendor
+docker/Dockerfile
