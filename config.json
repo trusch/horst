@@ -1,6 +1,6 @@
 {
   "twitter": {
-    "class": "github.com/trusch/horst/processors/twittersource",
+    "image": "trusch/horst/twittersource",
     "config": {
       "consumerKey": "4D6U7dJo1LemnP2qgoAYyHQjy",
       "consumerSecret": "qC9lzcKHvGQ9PAsmQNdTSWcLwXINllONWoTi2H5YpTB59qZdzj",
@@ -9,48 +9,50 @@
       "track": ["a","the","i","you"]
     },
     "outputs": {
-      "out": "projector"
+      "out": "http://projector"
     }
   },
 
   "projector": {
-    "class": "github.com/trusch/horst/processors/projector",
-    "config": "@text",
+    "image": "trusch/horst/projector",
+    "config": {
+      "projection": "@text"
+    },
     "outputs": {
-      "out": "sanitizer"
+      "out": "http://sanitizer"
     }
   },
 
   "sanitizer": {
-    "class": "github.com/trusch/horst/processors/textsanitizer",
+    "image": "trusch/horst/textsanitizer",
     "config": {
       "toLower": true,
-      "cutset": "@-!?,()[]{}"
+      "cutset": "@-!?,()[]{}.:"
     },
     "outputs": {
-      "out": "splitter"
+      "out": "http://splitter"
     }
   },
 
   "splitter": {
-    "class": "github.com/trusch/horst/processors/textsplitter",
+    "image": "trusch/horst/textsplitter",
     "outputs": {
-      "out": "filter"
+      "out": "http://filter"
     }
   },
 
   "filter": {
-    "class": "github.com/trusch/horst/processors/textfilter",
+    "image": "trusch/horst/textfilter",
     "config": {
-      "regex": "^#"
+      "regexp": "^#"
     },
     "outputs": {
-      "out": "histogram"
+      "out": "http://histogram"
     }
   },
 
   "histogram": {
-    "class": "github.com/trusch/horst/processors/incrementalhistogram",
+    "image": "trusch/horst/texthistogram",
     "config": {
       "decay": 0.999,
       "min": 0.3,
@@ -59,11 +61,13 @@
       "emitEvery": 50
     },
     "outputs": {
-      "out": "logger:histogram"
+      "out": "http://logger/histogram"
     }
   },
 
   "logger": {
-    "class": "github.com/trusch/horst/processors/logger"
+    "image": "trusch/horst/logger",
+    "outputs": {},
+    "config": {}
   }
 }
