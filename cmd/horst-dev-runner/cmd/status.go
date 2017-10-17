@@ -53,11 +53,22 @@ var statusCmd = &cobra.Command{
 		}
 
 		if len(args) > 0 {
-			for _, component := range args {
-				if err = status(component, docker); err != nil {
-					log.Fatal(err)
+			table := tablewriter.NewWriter(os.Stdout)
+			table.SetHeader([]string{"Name", "Status", "Running"})
+			for _, id := range args {
+				resp, err := docker.ContainerInspect(context.Background(), id)
+				if err != nil {
+					table.Append([]string{id, "stopped", ""})
+					continue
 				}
+				startedAt, err := time.Parse(time.RFC3339, resp.State.StartedAt)
+				if err != nil {
+					log.Error(err)
+					continue
+				}
+				table.Append([]string{id, resp.State.Status, time.Since(startedAt).Round(time.Second).String()})
 			}
+			table.Render()
 			return
 		}
 
@@ -86,10 +97,6 @@ var statusCmd = &cobra.Command{
 		}
 		table.Render()
 	},
-}
-
-func status(component string, docker *client.Client) error {
-	return nil
 }
 
 func init() {
