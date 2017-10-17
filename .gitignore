@@ -9,3 +9,4 @@ docker/textsplitter
 docker/twittersource
 vendor
 docker/Dockerfile
+docker/horst-k8s-compiler

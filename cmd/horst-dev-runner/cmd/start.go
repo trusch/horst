@@ -26,6 +26,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/trusch/horst/config"
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/docker/docker/api/types"
@@ -102,7 +103,7 @@ func init() {
 	RootCmd.AddCommand(startCmd)
 }
 
-func prepareComponent(id string, config *ComponentConfig, etcd *clientv3.Client) error {
+func prepareComponent(id string, config *config.ComponentConfig, etcd *clientv3.Client) error {
 	cfgBytes, err := json.Marshal(config.Config)
 	if err != nil {
 		return err

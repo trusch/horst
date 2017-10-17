@@ -1,8 +1,8 @@
 DOCKER_PREFIX=trusch/horst/
 
 COMPONENTS = logger projector textfilter texthistogram textsanitizer textsplitter twittersource
-BINARIES = $(foreach component,$(COMPONENTS),bin/$(component)) bin/horst-dev-runner
-DOCKER_IMAGES = $(foreach component,$(COMPONENTS),docker/$(component)) docker/horst-dev-runner
+BINARIES = $(foreach component,$(COMPONENTS),bin/$(component)) bin/horst-dev-runner bin/horst-k8s-compiler
+DOCKER_IMAGES = $(foreach component,$(COMPONENTS),docker/$(component)) docker/horst-dev-runner docker/horst-k8s-compiler
 
 
 
@@ -16,7 +16,7 @@ install: binaries
 clean:
 	rm -rf bin $(foreach component,$(COMPONENTS),docker/$(component)) docker/horst-dev-runner vendor
 
-bin/horst-dev-runner: $(shell find ./cmd/horst-dev-runner) vendor
+bin/horst-dev-runner: $(shell find ./cmd/horst-dev-runner ./config) vendor
 	mkdir -p bin
 	docker run --rm -it \
 		-u $(shell stat -c '%u:%g' .) \
@@ -26,7 +26,18 @@ bin/horst-dev-runner: $(shell find ./cmd/horst-dev-runner) vendor
 		-e GOOS=linux \
 		golang:1.9 go build -a -v -ldflags '-extldflags "-static"' -o bin/horst-dev-runner github.com/trusch/horst/cmd/horst-dev-runner
 
-bin/%: ./cmd/%/*.go ./components/%/*.go ./components/base/*.go ./components/interface.go ./runner/*.go vendor
+bin/horst-k8s-compiler: $(shell find ./cmd/horst-k8s-compiler ./config) vendor
+	mkdir -p bin
+	docker run --rm -it \
+		-u $(shell stat -c '%u:%g' .) \
+		-v $(shell pwd):/go/src/github.com/trusch/horst \
+		-w /go/src/github.com/trusch/horst \
+		-e CGO_ENABLED=0 \
+		-e GOOS=linux \
+		golang:1.9 go build -a -v -ldflags '-extldflags "-static"' -o bin/horst-k8s-compiler github.com/trusch/horst/cmd/horst-k8s-compiler
+
+
+bin/%: ./cmd/%/*.go ./components/%/*.go ./components/base/*.go ./components/interface.go ./runner/*.go ./config/*.go vendor
 	mkdir -p bin
 	docker run --rm -it \
 		-u $(shell stat -c '%u:%g' .) \

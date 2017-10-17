@@ -27,6 +27,7 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/trusch/horst/config"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -71,15 +72,8 @@ func initConfig() {
 	}
 }
 
-// ComponentConfig is the config of a single component instance
-type ComponentConfig struct {
-	Image   string            `json:"image"`
-	Config  interface{}       `json:"config"`
-	Outputs map[string]string `json:"outputs"`
-}
-
-func getConfig() (map[string]*ComponentConfig, error) {
-	cfg := make(map[string]*ComponentConfig)
+func getConfig() (map[string]*config.ComponentConfig, error) {
+	cfg := make(map[string]*config.ComponentConfig)
 	bs, err := ioutil.ReadFile(viper.GetString("config"))
 	if err != nil {
 		return nil, err
