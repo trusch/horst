@@ -4,8 +4,6 @@ COMPONENTS = logger projector textfilter texthistogram textsanitizer textsplitte
 BINARIES = $(foreach component,$(COMPONENTS),bin/$(component)) bin/horst-dev-runner bin/horst-k8s-compiler
 DOCKER_IMAGES = $(foreach component,$(COMPONENTS),docker/$(component)) docker/horst-dev-runner docker/horst-k8s-compiler
 
-
-
 docker-images: $(DOCKER_IMAGES)
 
 binaries: $(BINARIES)
@@ -14,7 +12,7 @@ install: binaries
 	cp bin/* $(GOPATH)/bin/
 
 clean:
-	rm -rf bin $(foreach component,$(COMPONENTS),docker/$(component)) docker/horst-dev-runner vendor
+	rm -rf bin $(foreach component,$(COMPONENTS),docker/$(component)) docker/horst-dev-runner docker/horst-k8s-compiler vendor
 
 bin/horst-dev-runner: $(shell find ./cmd/horst-dev-runner ./config) vendor
 	mkdir -p bin
