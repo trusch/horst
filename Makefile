@@ -24,7 +24,7 @@ bin/horst-dev-runner: $(shell find ./cmd/horst-dev-runner) vendor
 		-w /go/src/github.com/trusch/horst \
 		-e CGO_ENABLED=0 \
 		-e GOOS=linux \
-		golang:1.9 go build -v -ldflags '-extldflags "-static"' -o bin/horst-dev-runner github.com/trusch/horst/cmd/horst-dev-runner
+		golang:1.9 go build -a -v -ldflags '-extldflags "-static"' -o bin/horst-dev-runner github.com/trusch/horst/cmd/horst-dev-runner
 
 bin/%: ./cmd/%/*.go ./components/%/*.go ./components/base/*.go ./components/interface.go ./runner/*.go vendor
 	mkdir -p bin
@@ -34,7 +34,7 @@ bin/%: ./cmd/%/*.go ./components/%/*.go ./components/base/*.go ./components/inte
 		-w /go/src/github.com/trusch/horst \
 		-e CGO_ENABLED=0 \
 		-e GOOS=linux \
-		golang:1.9 go build -v -ldflags '-extldflags "-static"' -o bin/$(shell basename $@) github.com/trusch/horst/cmd/$(shell basename $@)
+		golang:1.9 go build -a -v -ldflags '-extldflags "-static"' -o bin/$(shell basename $@) github.com/trusch/horst/cmd/$(shell basename $@)
 
 docker/%: bin/% docker/Dockerfile.template
 	cp $< docker/

@@ -2,6 +2,7 @@ package twittersource
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -15,6 +16,7 @@ import (
 type Component struct {
 	base.Component
 	config *twitterConfig
+	client *twitter.Client
 	stream *twitter.Stream
 }
 
@@ -33,6 +35,7 @@ func New() (components.Component, error) {
 
 // HandleConfigUpdate gets called when new config for this component is available
 func (c *Component) HandleConfigUpdate(config map[string]interface{}) error {
+	log.Print("handle update")
 	if c.stream != nil {
 		c.stream.Stop()
 	}
@@ -41,24 +44,7 @@ func (c *Component) HandleConfigUpdate(config map[string]interface{}) error {
 		return err
 	}
 	c.config = cfg
-	if err := c.setupNewStream(); err != nil {
-		return err
-	}
-	log.Print("stream setup completed, waiting for tweets...")
-	go func() {
-		for evt := range c.stream.Messages {
-			if tweet, ok := evt.(*twitter.Tweet); ok {
-				log.Printf("got tweet from %v: %v", tweet.User.Name, tweet.Text)
-				data, _ := json.Marshal(tweet)
-				var dataMap map[string]interface{}
-				json.Unmarshal(data, &dataMap)
-				for id := range c.Outputs {
-					c.Emit(id, dataMap)
-				}
-			}
-		}
-	}()
-	return nil
+	return c.setupNewStream()
 }
 
 // Process gets called when a new event for a specific input should be processed
@@ -76,10 +62,33 @@ func (c *Component) setupNewStream() error {
 		Track:         c.config.Track,
 		StallWarnings: twitter.Bool(true),
 	}
+
+	// Convenience Demux demultiplexed stream messages
+	demux := twitter.NewSwitchDemux()
+	demux.Tweet = func(tweet *twitter.Tweet) {
+		fmt.Println(tweet.Text)
+		data, _ := json.Marshal(tweet)
+		var dataMap map[string]interface{}
+		json.Unmarshal(data, &dataMap)
+		for id := range c.Outputs {
+			c.Emit(id, dataMap)
+		}
+	}
+	demux.DM = func(dm *twitter.DirectMessage) {
+		fmt.Println(dm.SenderID)
+	}
+	demux.Event = func(event *twitter.Event) {
+		fmt.Printf("%#v\n", event)
+	}
+
 	stream, err := client.Streams.Filter(filterParams)
 	if err != nil {
 		return err
 	}
 	c.stream = stream
+	go func() {
+		demux.HandleChan(stream.Messages)
+		log.Print("demux returned")
+	}()
 	return nil
 }

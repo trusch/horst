@@ -170,32 +170,32 @@ func startEtcd(docker *client.Client) (string, error) {
 		AutoRemove: true,
 	}
 
-	ns := viper.GetString("namespace")
-	net := ns + "horstnet"
+	net := "horstnet"
 	networkConfig := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
 			net: &network.EndpointSettings{},
 		},
 	}
 
-	createResp, err := docker.ContainerCreate(context.Background(), containerConfig, hostConfig, networkConfig, ns+"etcd")
+	createResp, err := docker.ContainerCreate(context.Background(), containerConfig, hostConfig, networkConfig, "etcd")
 	if err != nil {
 		return "", err
 	}
 	if err = docker.ContainerStart(context.Background(), createResp.ID, types.ContainerStartOptions{}); err != nil {
 		return "", err
 	}
-	res, err := docker.ContainerInspect(context.Background(), ns+"etcd")
+	return getEtcdIP(docker)
+}
+
+func getEtcdIP(docker *client.Client) (string, error) {
+	res, err := docker.ContainerInspect(context.Background(), "etcd")
 	if err != nil {
 		return "", err
 	}
-	return res.NetworkSettings.Networks[net].IPAddress, nil
+	return res.NetworkSettings.Networks["horstnet"].IPAddress, nil
 }
 
 func startComponent(id, imageID string, docker *client.Client, etcdIP string) error {
-	ns := viper.GetString("namespace")
-	id = ns + id
-
 	containerConfig := &container.Config{
 		Image: imageID,
 		Cmd: []string{
@@ -208,7 +208,7 @@ func startComponent(id, imageID string, docker *client.Client, etcdIP string) er
 	}
 	networkConfig := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			ns + "horstnet": &network.EndpointSettings{},
+			"horstnet": &network.EndpointSettings{},
 		},
 	}
 	createResp, err := docker.ContainerCreate(context.Background(), containerConfig, hostConfig, networkConfig, id)
