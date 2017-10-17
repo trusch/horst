@@ -24,7 +24,6 @@
 package cmd
 
 import (
-	"context"
 	"encoding/json"
 	"io/ioutil"
 	"time"
@@ -37,11 +36,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-// restartCmd represents the start command
-var restartCmd = &cobra.Command{
-	Use:   "restart",
-	Short: "restart",
-	Long:  `restart.`,
+// reconfigureCmd represents the start command
+var reconfigureCmd = &cobra.Command{
+	Use:   "reconfigure",
+	Short: "reconfigure",
+	Long:  `reconfigure.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.SetLevel(log.DebugLevel)
 
@@ -78,10 +77,6 @@ var restartCmd = &cobra.Command{
 					log.Fatal(err)
 				}
 				log.Debugf("wrote config and outputs for %v", component)
-				if err = restart(component, docker); err != nil {
-					log.Fatal(err)
-				}
-				log.Debugf("restarted component '%v' (%v)", component, cfg[component].Image)
 			}
 			return
 		}
@@ -91,22 +86,10 @@ var restartCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 			log.Debugf("wrote config and outputs for %v", id)
-			if err = restart(id, docker); err != nil {
-				log.Fatal(err)
-			}
-			log.Debugf("restarted component '%v' (%v)", id, config.Image)
 		}
 	},
 }
 
-func restart(component string, docker *client.Client) error {
-	timeout := 3 * time.Second
-	if err := docker.ContainerRestart(context.Background(), component, &timeout); err != nil {
-		return err
-	}
-	return nil
-}
-
 func init() {
-	RootCmd.AddCommand(restartCmd)
+	RootCmd.AddCommand(reconfigureCmd)
 }

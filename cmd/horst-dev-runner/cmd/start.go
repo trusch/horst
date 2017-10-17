@@ -119,8 +119,6 @@ type ComponentConfig struct {
 }
 
 func prepareComponent(id string, config *ComponentConfig, etcd *clientv3.Client) error {
-	ns := viper.GetString("namespace")
-	id = ns + id
 	cfgBytes, err := json.Marshal(config.Config)
 	if err != nil {
 		return err
@@ -141,8 +139,7 @@ func prepareComponent(id string, config *ComponentConfig, etcd *clientv3.Client)
 }
 
 func createNetwork(docker *client.Client) error {
-	ns := viper.GetString("namespace")
-	name := ns + "horstnet"
+	name := "horstnet"
 	_, err := docker.NetworkInspect(context.Background(), name)
 	if err != nil {
 		log.Debug("horst network not found, creating new")
