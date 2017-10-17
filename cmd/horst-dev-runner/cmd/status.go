@@ -25,20 +25,22 @@ package cmd
 
 import (
 	"context"
+	"os"
+	"sort"
 	"time"
 
-	"github.com/coreos/etcd/clientv3"
+	"github.com/olekukonko/tablewriter"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/docker/docker/client"
 	"github.com/spf13/cobra"
 )
 
-// restartCmd represents the start command
-var restartCmd = &cobra.Command{
-	Use:   "restart",
-	Short: "restart",
-	Long:  `restart.`,
+// statusCmd represents the start command
+var statusCmd = &cobra.Command{
+	Use:   "status",
+	Short: "status",
+	Long:  `status.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := getConfig()
 		if err != nil {
@@ -50,53 +52,46 @@ var restartCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		etcdIP, err := getEtcdIP(docker)
-		if err != nil {
-			log.Fatal(err)
-		}
-		etcd, err := clientv3.New(clientv3.Config{
-			Endpoints:   []string{etcdIP + ":2379"},
-			DialTimeout: 3 * time.Second,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		if len(args) > 0 {
 			for _, component := range args {
-				if err = prepareComponent(component, cfg[component], etcd); err != nil {
+				if err = status(component, docker); err != nil {
 					log.Fatal(err)
 				}
-				log.Debugf("wrote config and outputs for %v", component)
-				if err = restart(component, docker); err != nil {
-					log.Fatal(err)
-				}
-				log.Debugf("restarted component '%v' (%v)", component, cfg[component].Image)
 			}
 			return
 		}
 
-		for id, config := range cfg {
-			if err = prepareComponent(id, config, etcd); err != nil {
-				log.Fatal(err)
-			}
-			log.Debugf("wrote config and outputs for %v", id)
-			if err = restart(id, docker); err != nil {
-				log.Fatal(err)
-			}
-			log.Debugf("restarted component '%v' (%v)", id, config.Image)
+		components := make([]string, len(cfg))
+		i := 0
+		for id := range cfg {
+			components[i] = id
+			i++
 		}
+		sort.Strings(components)
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Name", "Status", "Running"})
+		for _, id := range components {
+			resp, err := docker.ContainerInspect(context.Background(), id)
+			if err != nil {
+				table.Append([]string{id, "stopped", ""})
+				continue
+			}
+			startedAt, err := time.Parse(time.RFC3339, resp.State.StartedAt)
+			if err != nil {
+				log.Error(err)
+				continue
+			}
+			table.Append([]string{id, resp.State.Status, time.Since(startedAt).Round(time.Second).String()})
+		}
+		table.Render()
 	},
 }
 
-func restart(component string, docker *client.Client) error {
-	timeout := 3 * time.Second
-	if err := docker.ContainerRestart(context.Background(), component, &timeout); err != nil {
-		return err
-	}
+func status(component string, docker *client.Client) error {
 	return nil
 }
 
 func init() {
-	RootCmd.AddCommand(restartCmd)
+	RootCmd.AddCommand(statusCmd)
 }

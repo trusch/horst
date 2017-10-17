@@ -44,7 +44,7 @@
   "filter": {
     "image": "trusch/horst/textfilter",
     "config": {
-      "regexp": "^#"
+      "regexp": "^#[a-zA-Z0-9]"
     },
     "outputs": {
       "out": "http://histogram"

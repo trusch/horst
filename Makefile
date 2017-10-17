@@ -10,8 +10,8 @@ docker-images: $(DOCKER_IMAGES)
 
 binaries: $(BINARIES)
 
-install:
-	cp bin/* /usr/local/bin/
+install: binaries
+	cp bin/* $(GOPATH)/bin/
 
 clean:
 	rm -rf bin $(foreach component,$(COMPONENTS),docker/$(component)) docker/horst-dev-runner vendor

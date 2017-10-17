@@ -23,7 +23,6 @@ package cmd
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -34,7 +33,6 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // startCmd represents the start command
@@ -43,20 +41,13 @@ var startCmd = &cobra.Command{
 	Short: "start your pipeline",
 	Long:  `start your pipeline.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.SetLevel(log.DebugLevel)
-
 		/**
 		 * Parse config
 		 */
-		cfg := make(map[string]*ComponentConfig)
-		bs, err := ioutil.ReadFile(viper.GetString("config"))
+		cfg, err := getConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err = json.Unmarshal(bs, &cfg); err != nil {
-			log.Fatal(err)
-		}
-		log.Debug("parsed config")
 
 		/**
 		* Create network and start etcd
@@ -109,13 +100,6 @@ var startCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(startCmd)
-}
-
-// ComponentConfig is the config of a single component instance
-type ComponentConfig struct {
-	Image   string            `json:"image"`
-	Config  interface{}       `json:"config"`
-	Outputs map[string]string `json:"outputs"`
 }
 
 func prepareComponent(id string, config *ComponentConfig, etcd *clientv3.Client) error {

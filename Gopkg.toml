@@ -22,7 +22,7 @@
 
 
 [[constraint]]
-  name = "github.com/coreos/etcd"  
+  name = "github.com/coreos/etcd"
   branch = "master"
 
 [[constraint]]
@@ -56,3 +56,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/trusch/jsonq"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/olekukonko/tablewriter"

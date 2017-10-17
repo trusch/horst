@@ -21,14 +21,16 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-var cfgFile string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -49,11 +51,42 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	RootCmd.PersistentFlags().StringP("config", "c", "config.json", "config file")
+	RootCmd.PersistentFlags().String("log-level", "INFO", "log level")
 	viper.BindPFlags(RootCmd.PersistentFlags())
-
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
+	logLevel := viper.GetString("log-level")
+	switch logLevel {
+	case "DEBUG":
+		log.SetLevel(log.DebugLevel)
+	case "ERROR":
+		log.SetLevel(log.ErrorLevel)
+	case "WARN":
+		log.SetLevel(log.WarnLevel)
+	default:
+		log.SetLevel(log.InfoLevel)
+	}
+}
+
+// ComponentConfig is the config of a single component instance
+type ComponentConfig struct {
+	Image   string            `json:"image"`
+	Config  interface{}       `json:"config"`
+	Outputs map[string]string `json:"outputs"`
+}
+
+func getConfig() (map[string]*ComponentConfig, error) {
+	cfg := make(map[string]*ComponentConfig)
+	bs, err := ioutil.ReadFile(viper.GetString("config"))
+	if err != nil {
+		return nil, err
+	}
+	if err = json.Unmarshal(bs, &cfg); err != nil {
+		return nil, err
+	}
+	log.Debug("parsed config")
+	return cfg, nil
 }

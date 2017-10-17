@@ -24,8 +24,6 @@
 package cmd
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"time"
 
 	"github.com/coreos/etcd/clientv3"
@@ -33,7 +31,6 @@ import (
 
 	"github.com/docker/docker/client"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // reconfigureCmd represents the start command
@@ -42,17 +39,10 @@ var reconfigureCmd = &cobra.Command{
 	Short: "reconfigure",
 	Long:  `reconfigure.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.SetLevel(log.DebugLevel)
-
-		cfg := make(map[string]*ComponentConfig)
-		bs, err := ioutil.ReadFile(viper.GetString("config"))
+		cfg, err := getConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err = json.Unmarshal(bs, &cfg); err != nil {
-			log.Fatal(err)
-		}
-		log.Debug("parsed config")
 
 		docker, err := client.NewEnvClient()
 		if err != nil {

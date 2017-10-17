@@ -22,14 +22,11 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
-	"io/ioutil"
 	"time"
 
 	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // stopCmd represents the stop command
@@ -38,19 +35,13 @@ var stopCmd = &cobra.Command{
 	Short: "stop your pipeline",
 	Long:  `stop your pipeline.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.SetLevel(log.DebugLevel)
 		/**
 		 * Parse config
 		 */
-		cfg := make(map[string]*ComponentConfig)
-		bs, err := ioutil.ReadFile(viper.GetString("config"))
+		cfg, err := getConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err = json.Unmarshal(bs, &cfg); err != nil {
-			log.Fatal(err)
-		}
-		log.Debug("parsed config")
 
 		/**
 		 * stop containers
